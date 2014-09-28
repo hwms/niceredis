@@ -1,10 +1,11 @@
 from __future__ import with_statement
-import pytest
+
 import time
 
+import pytest
 import redis
-from redis.exceptions import ConnectionError
 from redis._compat import basestring, u, unichr
+from redis.exceptions import ConnectionError
 
 from .conftest import r as _redis_client
 

@@ -1,15 +1,17 @@
+# -*- coding: utf-8 *-*
 from __future__ import with_statement
-import binascii
+
 import datetime
-import pytest
-import redis
 import time
 
 import niceredis
-from redis._compat import (unichr, u, b, ascii_letters, iteritems, iterkeys,
-                           itervalues)
-from redis.client import parse_info
+import pytest
+import redis
 from redis import exceptions
+from redis._compat import ascii_letters, b, iteritems, iterkeys, itervalues, u, unichr
+from redis.client import parse_info
+
+import binascii
 
 from .conftest import skip_if_server_version_lt
 

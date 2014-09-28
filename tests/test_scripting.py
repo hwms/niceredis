@@ -1,9 +1,8 @@
 from __future__ import with_statement
-import pytest
 
+import pytest
 from redis import exceptions
 from redis._compat import b
-
 
 multiply_script = """
 local value = redis.call('GET', KEYS[1])

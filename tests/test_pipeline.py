@@ -1,6 +1,6 @@
 from __future__ import with_statement
-import pytest
 
+import pytest
 import redis
 from redis._compat import b, u, unichr, unicode
 

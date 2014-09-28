@@ -1,7 +1,8 @@
 from __future__ import with_statement
-import pytest
 
-from redis._compat import unichr, u, unicode
+import pytest
+from redis._compat import u, unichr, unicode
+
 from .conftest import r as _redis_client
 
 

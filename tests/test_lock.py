@@ -1,7 +1,8 @@
 from __future__ import with_statement
-import pytest
+
 import time
 
+import pytest
 from redis.exceptions import LockError, ResponseError
 from redis.lock import Lock, LuaLock
 

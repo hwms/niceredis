@@ -74,10 +74,6 @@ class HashCommands(RedisBase):
         args = list_or_args(keys, args)
         return self.execute_command('HMGET', name, *args)
 
-    def hvals(self, name):
-        "Return the list of values within hash ``name``"
-        return self.execute_command('HVALS', name)
-
     def hscan(self, name, cursor=0, match=None, count=None):
         """
         Incrementally return key/value slices in a hash. Also return a cursor
@@ -109,3 +105,7 @@ class HashCommands(RedisBase):
                                       match=match, count=count)
             for item in data.items():
                 yield item
+
+    def hvals(self, name):
+        "Return the list of values within hash ``name``"
+        return self.execute_command('HVALS', name)

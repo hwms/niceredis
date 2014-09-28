@@ -72,19 +72,6 @@ class SetCommands(RedisBase):
         "Remove ``values`` from set ``name``"
         return self.execute_command('SREM', name, *values)
 
-    def sunion(self, keys, *args):
-        "Return the union of sets specified by ``keys``"
-        args = list_or_args(keys, args)
-        return self.execute_command('SUNION', *args)
-
-    def sunionstore(self, dest, keys, *args):
-        """
-        Store the union of sets specified by ``keys`` into a new
-        set named ``dest``.  Returns the number of keys in the new set.
-        """
-        args = list_or_args(keys, args)
-        return self.execute_command('SUNIONSTORE', dest, *args)
-
     def sscan(self, name, cursor=0, match=None, count=None):
         """
         Incrementally return lists of elements in a set. Also return a cursor
@@ -116,3 +103,16 @@ class SetCommands(RedisBase):
                                       match=match, count=count)
             for item in data:
                 yield item
+
+    def sunion(self, keys, *args):
+        "Return the union of sets specified by ``keys``"
+        args = list_or_args(keys, args)
+        return self.execute_command('SUNION', *args)
+
+    def sunionstore(self, dest, keys, *args):
+        """
+        Store the union of sets specified by ``keys`` into a new
+        set named ``dest``.  Returns the number of keys in the new set.
+        """
+        args = list_or_args(keys, args)
+        return self.execute_command('SUNIONSTORE', dest, *args)

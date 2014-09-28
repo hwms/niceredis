@@ -224,33 +224,6 @@ class ZsetCommands(RedisBase):
         """
         return self.execute_command('ZREVRANK', name, value)
 
-    def zscore(self, name, value):
-        "Return the score of element ``value`` in sorted set ``name``"
-        return self.execute_command('ZSCORE', name, value)
-
-    def zunionstore(self, dest, keys, aggregate=None):
-        """
-        Union multiple sorted sets specified by ``keys`` into
-        a new sorted set, ``dest``. Scores in the destination will be
-        aggregated based on the ``aggregate``, or SUM if none is provided.
-        """
-        return self._zaggregate('ZUNIONSTORE', dest, keys, aggregate)
-
-    def _zaggregate(self, command, dest, keys, aggregate=None):
-        pieces = [command, dest, len(keys)]
-        if isinstance(keys, dict):
-            keys, weights = iterkeys(keys), itervalues(keys)
-        else:
-            weights = None
-        pieces.extend(keys)
-        if weights:
-            pieces.append(Token('WEIGHTS'))
-            pieces.extend(weights)
-        if aggregate:
-            pieces.append(Token('AGGREGATE'))
-            pieces.append(aggregate)
-        return self.execute_command(*pieces)
-
     def zscan(self, name, cursor=0, match=None, count=None,
               score_cast_func=float):
         """
@@ -290,3 +263,30 @@ class ZsetCommands(RedisBase):
                                       score_cast_func=score_cast_func)
             for item in data:
                 yield item
+
+    def zscore(self, name, value):
+        "Return the score of element ``value`` in sorted set ``name``"
+        return self.execute_command('ZSCORE', name, value)
+
+    def zunionstore(self, dest, keys, aggregate=None):
+        """
+        Union multiple sorted sets specified by ``keys`` into
+        a new sorted set, ``dest``. Scores in the destination will be
+        aggregated based on the ``aggregate``, or SUM if none is provided.
+        """
+        return self._zaggregate('ZUNIONSTORE', dest, keys, aggregate)
+
+    def _zaggregate(self, command, dest, keys, aggregate=None):
+        pieces = [command, dest, len(keys)]
+        if isinstance(keys, dict):
+            keys, weights = iterkeys(keys), itervalues(keys)
+        else:
+            weights = None
+        pieces.extend(keys)
+        if weights:
+            pieces.append(Token('WEIGHTS'))
+            pieces.extend(weights)
+        if aggregate:
+            pieces.append(Token('AGGREGATE'))
+            pieces.append(aggregate)
+        return self.execute_command(*pieces)

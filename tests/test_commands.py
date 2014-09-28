@@ -5,6 +5,7 @@ import pytest
 import redis
 import time
 
+import niceredis
 from redis._compat import (unichr, u, b, ascii_letters, iteritems, iterkeys,
                            itervalues)
 from redis.client import parse_info
@@ -39,8 +40,8 @@ class TestResponseCallbacks(object):
     "Tests for the response callback system"
 
     def test_response_callbacks(self, r):
-        assert r.response_callbacks == redis.Redis.RESPONSE_CALLBACKS
-        assert id(r.response_callbacks) != id(redis.Redis.RESPONSE_CALLBACKS)
+        assert r.response_callbacks == niceredis.Redis.RESPONSE_CALLBACKS
+        assert id(r.response_callbacks) != id(niceredis.Redis.RESPONSE_CALLBACKS)
         r.set_response_callback('GET', lambda x: 'static')
         r['a'] = 'foo'
         assert r['a'] == 'static'

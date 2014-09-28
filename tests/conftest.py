@@ -1,6 +1,6 @@
 import datetime
 import pytest
-import redis
+import niceredis
 
 from distutils.version import StrictVersion
 
@@ -13,7 +13,7 @@ def get_version(**kwargs):
     params.update(kwargs)
     key = '%s:%s' % (params['host'], params['port'])
     if key not in _REDIS_VERSIONS:
-        client = redis.Redis(**params)
+        client = niceredis.Redis(**params)
         _REDIS_VERSIONS[key] = client.info()['redis_version']
         client.connection_pool.disconnect()
     return _REDIS_VERSIONS[key]
@@ -45,9 +45,9 @@ def skip_if_server_version_lt(min_version):
 
 @pytest.fixture()
 def r(request, **kwargs):
-    return _get_client(redis.Redis, request, **kwargs)
+    return _get_client(niceredis.Redis, request, **kwargs)
 
 
 @pytest.fixture()
 def sr(request, **kwargs):
-    return _get_client(redis.StrictRedis, request, **kwargs)
+    return _get_client(niceredis.StrictRedis, request, **kwargs)

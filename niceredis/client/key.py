@@ -155,8 +155,14 @@ class KeyCommands(RedisBase):
         return self.execute_command('PSETEX', name, time_ms, value)
 
     def pttl(self, name):
-        "Returns the number of milliseconds until the key ``name`` will expire"
-        return self.execute_command('PTTL', name)
+        """
+        Returns the number of milliseconds until the key ``name`` will expire
+
+        If using non-strict Redis (strict_redis=False) and value is 0, None is returned.
+
+        """
+        when = self.execute_command('PTTL', name)
+        return when >= 0 and when or self.strict_redis and when or None
 
     def randomkey(self):
         "Returns the name of a random key"
@@ -220,7 +226,12 @@ class KeyCommands(RedisBase):
         Set the value of key ``name`` to ``value`` that expires in ``time``
         seconds. ``time`` can be represented by an integer or a Python
         timedelta object.
+
+        If using non-strict Redis (strict_redis=False), time and value are swapped.
+
         """
+        if not self.strict_redis:
+            time, value = value, time
         if isinstance(time, datetime.timedelta):
             time = time.seconds + time.days * 24 * 3600
         return self.execute_command('SETEX', name, time, value)
@@ -230,8 +241,14 @@ class KeyCommands(RedisBase):
         return self.execute_command('SETNX', name, value)
 
     def ttl(self, name):
-        "Returns the number of seconds until the key ``name`` will expire"
-        return self.execute_command('TTL', name)
+        """
+        Returns the number of seconds until the key ``name`` will expire
+
+        If using non-strict Redis (strict_redis=False) and value is 0, None is returned.
+
+        """
+        when = self.execute_command('TTL', name)
+        return when >= 0 and when or self.strict_redis and when or None
 
     def type(self, name):
         "Returns the type of key ``name``"

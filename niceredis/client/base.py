@@ -16,7 +16,13 @@ class RedisBase(redis.StrictRedis):
 
     Connection and Pipeline derive from this, implementing how
     the commands are sent and received to the Redis server
+
+    Setting strict_redis to False provides backwards compatibility with older versions of redis-py
+    that changed arguments to some commands to be more Pythonic, sane, or by accident and ttl values
+    are returned as None if they are 0 in strict form.
     """
+    strict_redis = False
+
     @classmethod
     def from_url(cls, url, db=None, **kwargs):
         """

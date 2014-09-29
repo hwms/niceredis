@@ -29,6 +29,7 @@ from .zset import ZsetCommands
 class StrictRedis(ByteCommands, HashCommands, HyperloglogCommands, KeyCommands, ListCommands,
                    NumberCommands, PipelineCommands, PubSubCommands, ScriptCommands, ServerCommands,
                    SetCommands, ZsetCommands):
+    strict_redis = True
     RESPONSE_CALLBACKS = dict_merge(
         string_keys_to_dict(
             'AUTH EXISTS EXPIRE EXPIREAT HEXISTS HMSET MOVE MSETNX PERSIST '
@@ -112,65 +113,7 @@ class Redis(StrictRedis):
     changed arguments to some commands to be more Pythonic, sane, or by
     accident.
     """
+    strict_redis = False
 
-    # Overridden callbacks
-    RESPONSE_CALLBACKS = dict_merge(
-        StrictRedis.RESPONSE_CALLBACKS,
-        {
-            'TTL': lambda r: r >= 0 and r or None,
-            'PTTL': lambda r: r >= 0 and r or None,
-        }
-    )
 
-    def setex(self, name, value, time):
-        """
-        Set the value of key ``name`` to ``value`` that expires in ``time``
-        seconds. ``time`` can be represented by an integer or a Python
-        timedelta object.
-        """
-        if isinstance(time, datetime.timedelta):
-            time = time.seconds + time.days * 24 * 3600
-        return self.execute_command('SETEX', name, time, value)
 
-    def lrem(self, name, value, num=0):
-        """
-        Remove the first ``num`` occurrences of elements equal to ``value``
-        from the list stored at ``name``.
-
-        The ``num`` argument influences the operation in the following ways:
-            num > 0: Remove elements equal to value moving from head to tail.
-            num < 0: Remove elements equal to value moving from tail to head.
-            num = 0: Remove all elements equal to value.
-        """
-        return self.execute_command('LREM', name, num, value)
-
-    def zadd(self, name, *args, **kwargs):
-        """
-        NOTE: The order of arguments differs from that of the official ZADD
-        command. For backwards compatability, this method accepts arguments
-        in the form of name1, score1, name2, score2, while the official Redis
-        documents expects score1, name1, score2, name2.
-
-        If you're looking to use the standard syntax, consider using the
-        StrictRedis class. See the API Reference section of the docs for more
-        information.
-
-        Set any number of element-name, score pairs to the key ``name``. Pairs
-        can be specified in two ways:
-
-        As *args, in the form of: name1, score1, name2, score2, ...
-        or as **kwargs, in the form of: name1=score1, name2=score2, ...
-
-        The following example would add four values to the 'my-key' key:
-        redis.zadd('my-key', 'name1', 1.1, 'name2', 2.2, name3=3.3, name4=4.4)
-        """
-        pieces = []
-        if args:
-            if len(args) % 2 != 0:
-                raise RedisError("ZADD requires an equal number of "
-                                 "values and scores")
-            pieces.extend(reversed(args))
-        for pair in iteritems(kwargs):
-            pieces.append(pair[1])
-            pieces.append(pair[0])
-        return self.execute_command('ZADD', name, *pieces)

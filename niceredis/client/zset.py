@@ -18,13 +18,16 @@ class ZsetCommands(RedisBase):
 
         The following example would add four values to the 'my-key' key:
         redis.zadd('my-key', 1.1, 'name1', 2.2, 'name2', name3=3.3, name4=4.4)
+
+        If using non-strict Redis (strict_redis=False), args are expected in swapped form:
+        redis.zadd('my-key', 'name1', 1.1, 'name2', 2.2, name3=3.3, name4=4.4)
         """
         pieces = []
         if args:
             if len(args) % 2 != 0:
                 raise RedisError("ZADD requires an equal number of "
                                  "values and scores")
-            pieces.extend(args)
+            pieces.extend(self.strict_redis and args or reversed(args))
         for pair in iteritems(kwargs):
             pieces.append(pair[1])
             pieces.append(pair[0])

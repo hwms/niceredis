@@ -1,6 +1,7 @@
 # -*- coding: utf-8 *-*
 from .base import RedisBase
 
+NOT_SET = object()
 
 class ListCommands(RedisBase):
     # LIST COMMANDS
@@ -102,7 +103,7 @@ class ListCommands(RedisBase):
         """
         return self.execute_command('LRANGE', name, start, end)
 
-    def lrem(self, name, count, value):
+    def lrem(self, name, count, value=NOT_SET):
         """
         Remove the first ``count`` occurrences of elements equal to ``value``
         from the list stored at ``name``.
@@ -111,7 +112,17 @@ class ListCommands(RedisBase):
             count > 0: Remove elements equal to value moving from head to tail.
             count < 0: Remove elements equal to value moving from tail to head.
             count = 0: Remove all elements equal to value.
+
+        If using non-strict Redis (strict_redis=False), count and value are swapped,
+        and count is than by default 0.
+
         """
+        if not self.strict_redis:
+            count, value = value, count
+            if count is NOT_SET:
+                count = 0
+        elif value is NOT_SET:
+            raise ValueError("value must be set.")
         return self.execute_command('LREM', name, count, value)
 
     def lset(self, name, index, value):

@@ -1,1 +1,1 @@
-from .client import *
+from niceredis.client import *

@@ -1,9 +1,5 @@
 # -*- coding: utf-8 *-*
-import datetime
-from itertools import imap
-
-from redis._compat import iteritems, nativestr
-from redis.exceptions import RedisError
+from redis._compat import imap, nativestr
 
 from ..callbacks import (bool_ok, float_or_none, int_or_none, pairs_to_dict, parse_client_list,
                          parse_config_get, parse_debug_object, parse_hscan, parse_info,
